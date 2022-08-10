@@ -2,7 +2,7 @@
 .vscode/dryrun.log
 .vscode/settings.json
 .vscode/targets.log
-kernel.o
-loader.o
-mykernel.bin
-mykernel.iso
+*.bin
+*.iso
+*.o
+

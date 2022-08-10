@@ -1,5 +1,5 @@
 #include "types.h"
-
+#include "gdt.h"
 
 void printf(const char* str) {
     //获取显示器地址

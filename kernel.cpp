@@ -1,5 +1,6 @@
 #include "types.h"
 #include "gdt.h"
+#include "interrupts.h"
 
 void printf(const char* str) {
     //获取显示器地址
@@ -49,7 +50,12 @@ extern "C" void callConstructors(){
 }
 
 extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber) {
-    printf((char*)"hello world!\n");
-    printf((char*)"world!");
+    printf("hello world!\n");
+    printf("world!");
+
+    GlobalDescriptorTable gdt;
+    InterruptManager interrupts(0x20, &gdt);
+    interrupts.Activate();
+    
     while(1);
 }

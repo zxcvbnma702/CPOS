@@ -7,4 +7,14 @@
 ## 关于启动引导
 
 使用grud进行操作系统启动引导，详见 [grud及multiboot规范](https://blog.csdn.net/wuhui_gdnt/category_856724.html)
+
 关于纯intel汇编进行启动引导，详见另一篇笔记
+
+## 关于中断
+
+[中断](https://blog.csdn.net/Wang_Dou_Dou_/article/details/122037133?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522166080074516782350886034%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fall.%2522%257D&request_id=166080074516782350886034&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_ecpm_v1~pc_rank_34-8-122037133-null-null.142^v41^pc_rank_34,185^v2^control&utm_term=8259A&spm=1018.2226.3001.4187)
+
+## 关于8259A
+
+[8259A芯片使用](https://blog.csdn.net/longintchar/article/details/79439466)
+

@@ -9,7 +9,7 @@ class InterruptManager;
 
 class InterruptHandler {
 public:
-    uint32_t HandleInterrupt(uint32_t esp);
+    virtual uint32_t HandleInterrupt(uint32_t esp);
 protected:
     InterruptHandler(uint8_t interruptNumber, InterruptManager* interruptManager);
     ~InterruptHandler();
@@ -26,6 +26,7 @@ public:
 
     void Activate();
     void Deactivate();
+    uint16_t HardwareInterruptOffset();
 
 protected:
     static InterruptManager* ActiveInterruptManager;

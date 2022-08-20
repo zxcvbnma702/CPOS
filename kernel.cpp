@@ -1,6 +1,7 @@
 #include "types.h"
 #include "gdt.h"
 #include "interrupts.h"
+#include "keyboard.h"
 
 void printf(const char* str) {
     //获取显示器地址
@@ -55,6 +56,8 @@ extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber) {
 
     GlobalDescriptorTable gdt;
     InterruptManager interrupts(0x20, &gdt);
+
+    KeyBoardDriver keyboard(&interrupts);
     interrupts.Activate();
     
     while(1);

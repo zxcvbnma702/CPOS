@@ -1,6 +1,6 @@
 #include "keyboard.h"
 
-// 0x21 键盘中断
+// 0x01 键盘中断
 KeyBoardDriver::KeyBoardDriver(InterruptManager* manager)
     : InterruptHandler(0x01 + manager -> HardwareInterruptOffset(), manager), dataPort(0x60), commandPort(0x64) 
 {

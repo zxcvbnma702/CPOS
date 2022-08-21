@@ -1,5 +1,8 @@
 #include "gdt.h"
 
+using namespace cpos;
+using namespace cpos::common;
+
 GlobalDescriptorTable::GlobalDescriptorTable()
     :nullSegmentDescriptor(0, 0, 0), 
     unUsedSegmentDescriptor(0, 0, 0), 

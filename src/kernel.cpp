@@ -4,6 +4,7 @@
 #include "drivers/driver.h"
 #include "drivers/keyboard.h"
 #include "drivers/mouse.h"
+#include "hardwarecommunication/pci.h"
 
 using namespace cpos;
 using namespace cpos::common;
@@ -95,7 +96,7 @@ public:
         if (y < 0) y = 0;
         else if (y >= 25) y = 24;
 
-        VideoMemory[y * 80 + x] = ((VideoMemory[y * 80 + x] & 0xf000) >> 4) |
+        VideoMemory[y  * 80 + x] = ((VideoMemory[y * 80 + x] & 0xf000) >> 4) |
                                 ((VideoMemory[y * 80 + x] & 0x0f00) << 4) |
                                 (VideoMemory[y * 80 + x] & 0x00ff);
     }
@@ -129,6 +130,10 @@ extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber) {
     MouseToConsole mousehandler;
     MouseDriver mouse(&interrupts, &mousehandler);
     drvManager.AddDriver(&mouse);
+
+    PeripheralComponentInterconnectController PCIController;
+    PCIController.SelectDrivers(&drvManager, &interrupts);
+
     drvManager.ActivateAll();
 
     interrupts.Activate();

@@ -1,5 +1,7 @@
 参考资料
 
+
+
 ## 关于x86内存分配
 
 ![image.png](https://s2.loli.net/2022/08/20/qbXits7dkPEnhCN.png)
@@ -231,3 +233,12 @@ Scan code
 ## 关于鼠标中断处理
 
 [详见](http://icodeguru.com/Embedded/asm/Appendix/App32-3.html)
+
+## 关于外部设备互联总线
+
+![image.png](https://s2.loli.net/2022/08/24/nPlxVruIHaqDoTh.png)
+![image.png](https://s2.loli.net/2022/08/24/TziS7xjbnPA85ef.png)
+![image.png](https://s2.loli.net/2022/08/24/qjPVAERwDOBxZsy.png)
+
+### PCI设备扫描方法
+![image.png](https://s2.loli.net/2022/08/24/hna5j41vLTwZKIk.png)

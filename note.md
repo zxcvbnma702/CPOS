@@ -236,6 +236,8 @@ Scan code
 
 ## 关于外部设备互联总线
 
+[详见](https://wiki.osdev.org/PCI)
+
 ![image.png](https://s2.loli.net/2022/08/24/nPlxVruIHaqDoTh.png)
 ![image.png](https://s2.loli.net/2022/08/24/TziS7xjbnPA85ef.png)
 ![image.png](https://s2.loli.net/2022/08/24/qjPVAERwDOBxZsy.png)

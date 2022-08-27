@@ -5,6 +5,10 @@
 #include "common/types.h"
 #include "hardwarecommunication/interrupts.h"
 
+/**
+ * 这块完全不懂啊,找手册抄
+ */
+
 namespace cpos{
     namespace drivers{
         class VideoGraphicsArray{

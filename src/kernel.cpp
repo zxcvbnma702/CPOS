@@ -6,11 +6,14 @@
 #include "drivers/mouse.h"
 #include "hardwarecommunication/pci.h"
 #include "drivers/vga.h"
+#include "gui/desktop.h"
+#include "gui/window.h"
 
 using namespace cpos;
 using namespace cpos::common;
 using namespace cpos::drivers;
 using namespace cpos::hardwarecommunication;
+using namespace cpos::gui;
 
 void printf(const char* str) {
     //获取显示器地址
@@ -83,7 +86,7 @@ public:
                                 (VideoMemory[y * 80 + x] & 0x00ff);
     }
 
-    void OnMouseMove(int8_t nx, int8_t ny) {
+    void OnMouseMove(int8_t nx, int8_t ny) override {
         uint16_t* VideoMemory = (uint16_t*)0xb8000;
         VideoMemory[y * 80 + x] = ((VideoMemory[y * 80 + x] & 0xf000) >> 4) |
                                 ((VideoMemory[y * 80 + x] & 0x0f00) << 4) |
@@ -123,13 +126,30 @@ extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber) {
     GlobalDescriptorTable gdt;
     InterruptManager interrupts(0x20, &gdt);
 
+#define GRAPHICMODE
+
+#ifdef GRAPHICMODE
+    Desktop desktop(320, 200, 0x00, 0x00, 0xa8);
+#endif
+
     DriverManager drvManager;
+
+#ifdef GRAPHICMODE
+    KeyBoardDriver keyboard(&interrupts, &desktop);
+#else
     PrintKeyboardEventHandler kbhandler;
     KeyBoardDriver keyboard(&interrupts, &kbhandler);
+#endif
+
     drvManager.AddDriver(&keyboard);
 
+#ifdef GRAPHICMODE
+    MouseDriver mouse(&interrupts, &desktop);
+#else
     MouseToConsole mousehandler;
     MouseDriver mouse(&interrupts, &mousehandler);
+#endif
+
     drvManager.AddDriver(&mouse);
 
     PeripheralComponentInterconnectController PCIController;
@@ -138,14 +158,20 @@ extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber) {
     VideoGraphicsArray vga;
     drvManager.ActivateAll();
 
+#ifdef GRAPHICMODE
+    vga.SetMode(320, 200, 8);
+    Window w1(&desktop, 10, 10, 20, 20, 0xa8, 0x00, 0x00);
+    desktop.AddChild(&w1);
+
+    Window w2(&desktop, 40, 15, 30, 30, 0x00, 0xa8, 0x00);
+    desktop.AddChild(&w2);
+#endif
+
     interrupts.Activate();
 
-    vga.SetMode(320, 200, 8);
-    for (uint32_t y = 0; y < 200; y++) {
-        for (uint32_t x = 0; x < 320; x++) {
-            vga.PutPixel(x, y, 0x00, 0x00, 0xa8);
-        }
+    while(1){
+        #ifdef GRAPHICMODE
+            desktop.Draw(&vga);
+        #endif
     }
-    
-    while(1);
 }

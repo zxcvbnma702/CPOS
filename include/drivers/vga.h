@@ -18,9 +18,11 @@ namespace cpos{
 
             bool SupportsMode(cpos::common::uint32_t width, cpos::common::uint32_t heigh, cpos::common::uint32_t colorDepth);
             bool SetMode(cpos::common::uint32_t width, cpos::common::uint32_t heigh, cpos::common::uint32_t colorDepth);
-            void PutPixel(cpos::common::uint32_t x, cpos::common::uint32_t y, cpos::common::uint8_t colorIndex);
-            void PutPixel(cpos::common::uint32_t x, cpos::common::uint32_t y, cpos::common::uint8_t r, cpos::common::uint8_t g, cpos::common::uint8_t b);
+            void PutPixel(cpos::common::int32_t x, cpos::common::int32_t y, cpos::common::uint8_t colorIndex);
+            void PutPixel(cpos::common::int32_t x, cpos::common::int32_t y, cpos::common::uint8_t r, cpos::common::uint8_t g, cpos::common::uint8_t b);
 
+            void FillRectangle(cpos::common::uint32_t x, cpos::common::uint32_t y, cpos::common::uint32_t w, cpos::common::uint32_t h, cpos::common::uint8_t r,
+                cpos::common::uint8_t g, cpos::common::uint8_t b);
         private:
             hardwarecommunication::Port8Bit miscPort;
             hardwarecommunication::Port8Bit crtcIndexPort;

@@ -8,6 +8,7 @@
 #include "drivers/vga.h"
 #include "gui/desktop.h"
 #include "gui/window.h"
+#include "multitasking.h"
 
 using namespace cpos;
 using namespace cpos::common;
@@ -119,14 +120,33 @@ extern "C" void callConstructors(){
     }
 }
 
+void taskA(){
+    while(true){
+        printf("A");
+    }
+}
+
+void taskB(){
+    while(true){
+        printf("B");
+    }
+}
+
 extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber) {
     printf("hello world!\n");
     printf("world!");
 
     GlobalDescriptorTable gdt;
-    InterruptManager interrupts(0x20, &gdt);
 
-#define GRAPHICMODE
+    TaskManger taskManger;
+    Task task1(&gdt, taskA);
+    Task task2(&gdt, taskB);
+    taskManger.AddTask(&task1);
+    taskManger.AddTask(&task2);
+
+    InterruptManager interrupts(0x20, &gdt, &taskManger);
+
+// #define GRAPHICMODE
 
 #ifdef GRAPHICMODE
     Desktop desktop(320, 200, 0x00, 0x00, 0xa8);

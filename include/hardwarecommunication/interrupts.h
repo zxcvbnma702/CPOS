@@ -4,6 +4,7 @@
 #include "common/types.h"
 #include "hardwarecommunication/port.h"
 #include "gdt.h"
+#include "multitasking.h"
 
 namespace cpos
 {
@@ -26,7 +27,7 @@ namespace cpos
         class InterruptManager {
             friend class InterruptHandler;
         public:
-            InterruptManager(cpos::common::uint16_t hardwareInterruptOffset, GlobalDescriptorTable* gdt);
+            InterruptManager(cpos::common::uint16_t hardwareInterruptOffset, GlobalDescriptorTable* gdt, TaskManger* taskManger);
             ~InterruptManager();
 
             cpos::common::uint16_t HardwareInterruptOffset();
@@ -36,6 +37,7 @@ namespace cpos
         protected:
             static InterruptManager* ActiveInterruptManager;
             InterruptHandler* handlers[256];
+            TaskManger* taskManger;
 
             //门描述符
             struct GateDescriptor {

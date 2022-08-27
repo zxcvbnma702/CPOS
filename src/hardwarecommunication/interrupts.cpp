@@ -1,5 +1,6 @@
 #include "hardwarecommunication/interrupts.h"
 
+using namespace cpos;
 using namespace cpos::common;
 using namespace cpos::hardwarecommunication;
 
@@ -41,13 +42,14 @@ void InterruptManager::SetInterruptDescriptorTableEntry(
     interruptDescriptorTable[interruptNumber].reserved = 0;
 }
 
-InterruptManager::InterruptManager(uint16_t hardwareInterruptOffset, GlobalDescriptorTable* gdt) 
+InterruptManager::InterruptManager(uint16_t hardwareInterruptOffset, GlobalDescriptorTable* gdt, TaskManger* taskManger) 
     : picMasterCommand(0x20),
     picMasterData(0x21),
     picSlaveCommand(0xA0),
     picSlaveData(0xA1) {
     this->hardwareInterruptOffset = hardwareInterruptOffset;
-    uint16_t CodeSegment = (gdt->CodeSegmentSelector()) >> 3;
+    this->taskManger = taskManger;
+    uint16_t CodeSegment = (gdt->CodeSegmentSelector()) << 3;
 
     const uint8_t IDT_INTERRUPT_GATE = 0xe;
     for (uint16_t i = 0; i < 256; i++) {
@@ -153,6 +155,10 @@ uint32_t InterruptManager::DoHandleInterrupt(uint8_t interruptNumber, uint32_t e
     } else if (interruptNumber != hardwareInterruptOffset) { // 屏蔽时钟中断
         printf("UNHANDLED INTERRUPT 0X");
         printfHex(interruptNumber);
+    }
+
+    if (interruptNumber == hardwareInterruptOffset) {
+        esp = (uint32_t)taskManger->Schedule((CPUState*)esp);
     }
 
     //硬件中断

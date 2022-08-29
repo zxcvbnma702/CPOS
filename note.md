@@ -244,3 +244,32 @@ Scan code
 
 ### PCI设备扫描方法
 ![image.png](https://s2.loli.net/2022/08/24/hna5j41vLTwZKIk.png)
+
+### 关于ATA
+
+28 bit PIO
+Assume you have a sectorcount byte and a 28 bit LBA value. A sectorcount of 0 means 256 sectors = 128K.
+
+Notes: When you send a command byte and the RDY bit of the Status Registers is clear, you may have to wait (technically up to 30 seconds) for the drive to spin up, before DRQ sets. You may also need to ignore ERR and DF the first four times that you read the Status, if you are polling.
+
+An example of a 28 bit LBA PIO mode read on the Primary bus:
+
+- Send 0xE0 for the "master" or 0xF0 for the "slave", ORed with the highest 4 bits of the LBA to port 0x1F6: outb(0x1F6, 0xE0 | (slavebit << 4) | ((LBA >> 24) & 0x0F))
+- Send a NULL byte to port 0x1F1, if you like (it is ignored and wastes lots of CPU time): outb(0x1F1, 0x00)
+- Send the sectorcount to port 0x1F2: outb(0x1F2, (unsigned char) count)
+- Send the low 8 bits of the LBA to port 0x1F3: outb(0x1F3, (unsigned char) LBA))
+- Send the next 8 bits of the LBA to port 0x1F4: outb(0x1F4, (unsigned char)(LBA >> 8))
+- Send the next 8 bits of the LBA to port 0x1F5: outb(0x1F5, (unsigned char)(LBA >> 16))
+- Send the "READ SECTORS" command (0x20) to port 0x1F7: outb(0x1F7, 0x20)
+  
+Wait for an IRQ or poll.
+
+Transfer 256 16-bit values, a uint16_t at a time, into your buffer from I/O port 0x1F0. (In assembler, REP INSW works well for this.)
+Then loop back to waiting for the next IRQ (or poll again -- see next note) for each successive sector.
+Note for polling PIO drivers: After transferring the last uint16_t of a PIO data block to the data IO port, give the drive a 400ns delay to reset its DRQ bit (and possibly set BSY again, while emptying/filling its buffer to/from the drive).
+
+Note on the "magic bits" sent to port 0x1f6: Bit 6 (value = 0x40) is the LBA bit. This must be set for either LBA28 or LBA48 transfers. It must be clear for CHS transfers. Bits 7 and 5 are obsolete for current ATA drives, but must be set for backwards compatibility with very old (ATA1) drives.
+
+Writing 28 bit LBA
+To write sectors in 28 bit PIO mode, send command "WRITE SECTORS" (0x30) to the Command port. Do not use REP OUTSW to transfer data. There must be a tiny delay between each OUTSW output uint16_t. A jmp $+2 size of delay. Make sure to do a Cache Flush (ATA command 0xE7) after each write command completes.
+

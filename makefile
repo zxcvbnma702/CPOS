@@ -5,6 +5,7 @@ LDPARAMS = -melf_i386 -no-pie
 
 objects = obj/loader.o \
           obj/gdt.o \
+		  obj/systemcalls.o \
 		  obj/multitasking.o \
 		  obj/memorymanagement.o \
           obj/drivers/driver.o \
@@ -12,6 +13,7 @@ objects = obj/loader.o \
           obj/hardwarecommunication/interruptstubs.o \
           obj/hardwarecommunication/interrupts.o \
 		  obj/hardwarecommunication/pci.o \
+		  obj/drivers/ata.o \
           obj/drivers/keyboard.o \
           obj/drivers/mouse.o \
 		  obj/drivers/vga.o \

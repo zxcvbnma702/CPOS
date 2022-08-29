@@ -4,6 +4,7 @@
 #include "common/types.h"
 
 namespace cpos {
+    //内存块头
     struct MemoryChunk {
         MemoryChunk* next;
         MemoryChunk* prev;

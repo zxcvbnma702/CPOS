@@ -4,12 +4,14 @@
 #include "drivers/driver.h"
 #include "drivers/keyboard.h"
 #include "drivers/mouse.h"
+#include "drivers/ata.h"
 #include "hardwarecommunication/pci.h"
 #include "drivers/vga.h"
 #include "gui/desktop.h"
 #include "gui/window.h"
 #include "multitasking.h"
 #include "memorymanagement.h"
+#include "systemcalls.h"
 
 using namespace cpos;
 using namespace cpos::common;
@@ -61,6 +63,10 @@ void printfHex(uint8_t key) {
     foo[0] = hex[(key >> 4) & 0x0f];
     foo[1] = hex[key & 0x0f];
     printf((const char*)foo);
+}
+
+void sysPrintf(char* str){
+    asm volatile("int $0x80" : :"a" (4), "b" (str));
 }
 
 //键盘中断处理实现类
@@ -123,32 +129,27 @@ extern "C" void callConstructors(){
 
 void taskA(){
     while(true){
-        printf("A");
+        sysPrintf("A");
     }
 }
 
 void taskB(){
     while(true){
-        printf("B");
+        sysPrintf("B");
     }
 }
 
 extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber) {
-    printf("hello world!\n");
-    printf("world!");
 
     GlobalDescriptorTable gdt;
 
+    // 10M
     size_t heap = 10 * 1024 * 1024;
+    // 通过grub获取可用内存, 64M
     uint32_t* memupper = (uint32_t*)((size_t)multiboot_structure + 8);
-    printfHex(((*memupper) >> 24) & 0xff);
-    printfHex(((*memupper) >> 16) & 0xff);
-    printfHex(((*memupper) >> 8) & 0xff);
-    printfHex(((*memupper) >> 0) & 0xff);
-
     MemoryManager memoryManager(heap, (*memupper) * 1024 - heap - 10 * 1024);
 
-    printf("\n heap: 0x");
+    printf("heap: 0x");
     printfHex((heap >> 24) & 0xff);
     printfHex((heap >> 16) & 0xff);
     printfHex((heap >> 8) & 0xff);
@@ -162,12 +163,13 @@ extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber) {
     printfHex(((size_t)allocated >> 0) & 0xff);
 
     TaskManger taskManger;
-    // Task task1(&gdt, taskA);
-    // Task task2(&gdt, taskB);
-    // taskManger.AddTask(&task1);
-    // taskManger.AddTask(&task2);
+    Task task1(&gdt, taskA);
+    Task task2(&gdt, taskB);
+    taskManger.AddTask(&task1);
+    taskManger.AddTask(&task2);
 
     InterruptManager interrupts(0x20, &gdt, &taskManger);
+    SystemHandler syscalls(&interrupts, 0x80);
 
 // #define GRAPHICMODE
 
@@ -175,24 +177,21 @@ extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber) {
     Desktop desktop(320, 200, 0x00, 0x00, 0xa8);
 #endif
 
-    DriverManager drvManager;
-
 #ifdef GRAPHICMODE
+    Desktop desktop(320, 200, 0x00, 0x00, 0xa8);
+
+    MouseDriver mouse(&interrupts, &desktop);
     KeyBoardDriver keyboard(&interrupts, &desktop);
 #else
+    MouseToConsole mousehandler;
+    MouseDriver mouse(&interrupts, &mousehandler);
+
     PrintKeyboardEventHandler kbhandler;
     KeyBoardDriver keyboard(&interrupts, &kbhandler);
 #endif
 
+    DriverManager drvManager;
     drvManager.AddDriver(&keyboard);
-
-#ifdef GRAPHICMODE
-    MouseDriver mouse(&interrupts, &desktop);
-#else
-    MouseToConsole mousehandler;
-    MouseDriver mouse(&interrupts, &mousehandler);
-#endif
-
     drvManager.AddDriver(&mouse);
 
     PeripheralComponentInterconnectController PCIController;
@@ -209,6 +208,31 @@ extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber) {
     Window w2(&desktop, 40, 15, 30, 30, 0x00, 0xa8, 0x00);
     desktop.AddChild(&w2);
 #endif
+
+    /**
+     * Current disk controller chips almost always support two ATA buses per chip. 
+     * There is a standardized set of IO ports to control the disks on the buses. 
+     * The first two buses are called the Primary and Secondary ATA bus, 
+     * and are almost always controlled by IO ports 0x1F0 through 0x1F7, 
+     * and 0x170 through 0x177, respectively (unless you change it).
+     * 
+     * The standard IRQ for the Primary bus is IRQ14, and IRQ15 for the Secondary bus.
+     */
+    // AdvancedTechnologyAttachment ata0m(0x1F0, true);
+    // printf("ATA Primary Master: ");
+    // ata0m.Identify();
+    // AdvancedTechnologyAttachment ata0s(0x1F0, false);
+    // printf("\n ATA Primary Slave: ");
+    // ata0m.Identify();
+
+    // char* buffer = "http://Alograaaaa.com";
+    // ata0s.Write28(0, (uint8_t*)buffer, 21);
+    // ata0s.Flush();
+
+    // ata0s.Read28(0, (uint8_t*)buffer, 21);
+
+    // AdvancedTechnologyAttachment ata1m(0x170, true);
+    // AdvancedTechnologyAttachment ata1s(0x170, false);
 
     interrupts.Activate();
 

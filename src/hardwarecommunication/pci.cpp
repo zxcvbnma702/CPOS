@@ -50,23 +50,23 @@ void PeripheralComponentInterconnectController::SelectDrivers(DriverManager* dri
             for(uint8_t function = 0; function < numFunction; function++){
                 PeripheralComponentInterconnectDeviceDescriptor dev = GetDeviceDescriptor(bus, device, function);
                 if(dev.vendor_id == 0 || dev.vendor_id == 0xffff) continue; //无效值, 0xffff表示设备不存在
-                printf("PCI BUS ");
-                printfHex(bus & 0xff);
+                // printf("PCI BUS ");
+                // printfHex(bus & 0xff);
 
-                printf(", DEVICE");
-                printfHex(device);
+                // printf(", DEVICE");
+                // printfHex(device);
 
-                printf(", FUNCTION");
-                printfHex(function);
+                // printf(", FUNCTION");
+                // printfHex(function);
 
-                printf(" = VENDOR");
-                printfHex((dev.vendor_id & 0xff00)>>8);
-                printfHex(dev.vendor_id & 0xff);
+                // printf(" = VENDOR");
+                // printfHex((dev.vendor_id & 0xff00)>>8);
+                // printfHex(dev.vendor_id & 0xff);
 
-                printf(", DEVICE ");
-                printfHex((dev.device_id & 0xff00)>>8);
-                printfHex(dev.device_id & 0xff);
-                printf("\n");
+                // printf(", DEVICE ");
+                // printfHex((dev.device_id & 0xff00)>>8);
+                // printfHex(dev.device_id & 0xff);
+                // printf("\n");
 
                 for(uint8_t barNum = 0; barNum < 6; barNum ++){
                     BaseAdressRegister bar = GetBaseAddressRegister(bus, device, function, barNum);

@@ -33,6 +33,8 @@ HandleInterruptRequest 0x0D
 HandleInterruptRequest 0x0E
 HandleInterruptRequest 0x0F
 HandleInterruptRequest 0x31
+HandleInterruptRequest 0x80
+
 HandleException 0x00
 HandleException 0x01
 HandleException 0x02
@@ -53,6 +55,7 @@ HandleException 0x10
 HandleException 0x11
 HandleException 0x12
 HandleException 0x13
+
 int_bottom:
     pushl %ebp
     pushl %edi

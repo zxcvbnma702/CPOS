@@ -7,7 +7,7 @@ MemoryManager* MemoryManager::activeMemoryManager = 0;
 
 MemoryManager::MemoryManager(size_t start, size_t size) {
     activeMemoryManager = this;
-
+    //初始化内存块, 整个内存为一个chunk + size
     if (size < sizeof(MemoryChunk)) {
         first = 0;
     } else {
@@ -35,8 +35,10 @@ void* MemoryManager::malloc(size_t size) {
 
     if (result == 0) return 0;
 
+    //如果剩余内存足够，分配内存
     if (result->size >= size + sizeof(MemoryChunk) + 1) {
         MemoryChunk* temp = (MemoryChunk*)((size_t)result + sizeof(MemoryChunk) + size);
+        
         temp->allocated = false;
         temp->size = result->size - size - sizeof(MemoryChunk);
         temp->prev = result;

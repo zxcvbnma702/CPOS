@@ -1,23 +1,25 @@
 #include "common/types.h"
-#include "gdt.h"
+#include "hardwarecommunication/pci.h"
 #include "hardwarecommunication/interrupts.h"
+#include "filesystem/msdocpart.h"
 #include "drivers/driver.h"
 #include "drivers/keyboard.h"
 #include "drivers/mouse.h"
 #include "drivers/ata.h"
-#include "hardwarecommunication/pci.h"
 #include "drivers/vga.h"
 #include "gui/desktop.h"
 #include "gui/window.h"
 #include "multitasking.h"
 #include "memorymanagement.h"
 #include "systemcalls.h"
+#include "gdt.h"
 
 using namespace cpos;
 using namespace cpos::common;
 using namespace cpos::drivers;
 using namespace cpos::hardwarecommunication;
 using namespace cpos::gui;
+using namespace cpos::filesystem;
 
 void printf(const char* str) {
     //获取显示器地址
@@ -218,21 +220,22 @@ extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber) {
      * 
      * The standard IRQ for the Primary bus is IRQ14, and IRQ15 for the Secondary bus.
      */
-    // AdvancedTechnologyAttachment ata0m(0x1F0, true);
-    // printf("ATA Primary Master: ");
-    // ata0m.Identify();
-    // AdvancedTechnologyAttachment ata0s(0x1F0, false);
-    // printf("\n ATA Primary Slave: ");
-    // ata0m.Identify();
+    AdvancedTechnologyAttachment ata0m(0x1F0, true);
+    printf("ATA Primary Master: ");
+    ata0m.Identify();
+    AdvancedTechnologyAttachment ata0s(0x1F0, false);
+    printf("\n ATA Primary Slave: ");
+    ata0m.Identify();
 
     // char* buffer = "http://Alograaaaa.com";
     // ata0s.Write28(0, (uint8_t*)buffer, 21);
     // ata0s.Flush();
 
     // ata0s.Read28(0, (uint8_t*)buffer, 21);
+    MSDOSPartitionTable::ReadPartitions(&ata0s);
 
-    // AdvancedTechnologyAttachment ata1m(0x170, true);
-    // AdvancedTechnologyAttachment ata1s(0x170, false);
+    AdvancedTechnologyAttachment ata1m(0x170, true);
+    AdvancedTechnologyAttachment ata1s(0x170, false);
 
     interrupts.Activate();
 

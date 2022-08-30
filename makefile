@@ -13,6 +13,7 @@ objects = obj/loader.o \
           obj/hardwarecommunication/interruptstubs.o \
           obj/hardwarecommunication/interrupts.o \
 		  obj/hardwarecommunication/pci.o \
+		  obj/filesystem/msdocpart.o \
 		  obj/drivers/ata.o \
           obj/drivers/keyboard.o \
           obj/drivers/mouse.o \

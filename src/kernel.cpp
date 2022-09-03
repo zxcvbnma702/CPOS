@@ -7,6 +7,7 @@
 #include "drivers/mouse.h"
 #include "drivers/ata.h"
 #include "drivers/vga.h"
+#include "drivers/timer.h"
 #include "gui/desktop.h"
 #include "gui/window.h"
 #include "multitasking.h"
@@ -119,6 +120,13 @@ private:
     int8_t x, y;
 };
 
+class TimePrint : public TimerEventHandler{
+    public:
+    void Timer(){
+        printf("q");
+    } 
+};
+
 typedef void (*constructor)();
 extern "C" constructor start_ctors;
 extern "C" constructor end_ctors;
@@ -158,7 +166,7 @@ extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber) {
     printfHex((heap >> 0) & 0xff);
 
     void* allocated = memoryManager.malloc(1024);
-    printf("\n allocated: 0x");
+    printf("\nallocated: 0x");
     printfHex(((size_t)allocated >> 24) & 0xff);
     printfHex(((size_t)allocated >> 16) & 0xff);
     printfHex(((size_t)allocated >> 8) & 0xff);
@@ -220,22 +228,24 @@ extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber) {
      * 
      * The standard IRQ for the Primary bus is IRQ14, and IRQ15 for the Secondary bus.
      */
-    AdvancedTechnologyAttachment ata0m(0x1F0, true);
-    printf("ATA Primary Master: ");
-    ata0m.Identify();
-    AdvancedTechnologyAttachment ata0s(0x1F0, false);
-    printf("\n ATA Primary Slave: ");
-    ata0m.Identify();
+
+    // AdvancedTechnologyAttachment ata0m(0x1F0, true);
+    // printf("ATA Primary Master: ");
+    // ata0m.Identify();
+    // AdvancedTechnologyAttachment ata0s(0x1F0, false);
+    // printf("\nATA Primary Slave: ");
+    // ata0m.Identify();
 
     // char* buffer = "http://Alograaaaa.com";
     // ata0s.Write28(0, (uint8_t*)buffer, 21);
     // ata0s.Flush();
 
     // ata0s.Read28(0, (uint8_t*)buffer, 21);
-    MSDOSPartitionTable::ReadPartitions(&ata0s);
 
-    AdvancedTechnologyAttachment ata1m(0x170, true);
-    AdvancedTechnologyAttachment ata1s(0x170, false);
+    // MSDOSPartitionTable::ReadPartitions(&ata0m);
+
+    // AdvancedTechnologyAttachment ata1m(0x170, true);
+    // AdvancedTechnologyAttachment ata1s(0x170, false);
 
     interrupts.Activate();
 

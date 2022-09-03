@@ -273,3 +273,35 @@ Note on the "magic bits" sent to port 0x1f6: Bit 6 (value = 0x40) is the LBA bit
 Writing 28 bit LBA
 To write sectors in 28 bit PIO mode, send command "WRITE SECTORS" (0x30) to the Command port. Do not use REP OUTSW to transfer data. There must be a tiny delay between each OUTSW output uint16_t. A jmp $+2 size of delay. Make sure to do a Cache Flush (ATA command 0xE7) after each write command completes.
 
+### 关于
+
+```c
+struct multiboot_info {
+	u32 flags;
+	u32 low_mem;
+	u32 high_mem;
+	u32 boot_device;
+	u32 cmdline;
+	u32 mods_count;
+	u32 mods_addr;
+	struct {
+		u32 num;
+		u32 size;
+		u32 addr;
+		u32 shndx;
+	} elf_sec;
+	unsigned long mmap_length;
+	unsigned long mmap_addr;
+	unsigned long drives_length;
+	unsigned long drives_addr;
+	unsigned long config_table;
+	unsigned long boot_loader_name;
+	unsigned long apm_table;
+	unsigned long vbe_control_info;
+	unsigned long vbe_mode_info;
+	unsigned long vbe_mode;
+	unsigned long vbe_interface_seg;
+	unsigned long vbe_interface_off;
+	unsigned long vbe_interface_len;
+};
+```

@@ -1,4 +1,5 @@
 #include "filesystem/msdocpart.h"
+#include "filesystem/fat.h"
 
 using namespace cpos;
 using namespace cpos::common;
@@ -6,7 +7,7 @@ using namespace cpos::filesystem;
 using namespace cpos::drivers;
 
 
-void printf(char* str);
+void printf(const char* str);
 void printfHex(uint8_t key);
 
 void MSDOSPartitionTable::ReadPartitions(AdvancedTechnologyAttachment *hd){
@@ -20,6 +21,10 @@ void MSDOSPartitionTable::ReadPartitions(AdvancedTechnologyAttachment *hd){
 
     for(int i = 0; i < 4; i++){
 
+        if(mbr.primaryPartition[i].partition_id == 0){
+            return;
+        }
+
         printf(" Partition: ");
         printfHex(i);
         
@@ -32,6 +37,7 @@ void MSDOSPartitionTable::ReadPartitions(AdvancedTechnologyAttachment *hd){
         printfHex(mbr.primaryPartition[i].partition_id);
         printf("\n");
 
-
+        ReadBiosBlock(hd, mbr.primaryPartition[i].start_lba);
+    
     }
 }

@@ -108,10 +108,10 @@ void AdvancedTechnologyAttachment::Read28(uint32_t sector, uint8_t* data, int co
     for(uint16_t i = 0; i < count; i+=2){
         uint16_t rdata = dataPort.Read();
 
-        char* foo = "  \0";
-        foo[1] = (rdata >> 8) & 0x00FF;
-        foo[0] = rdata & 0x00FF;
-        printf(foo);
+        // char* foo = "  \0";
+        // foo[1] = (rdata >> 8) & 0x00FF;
+        // foo[0] = rdata & 0x00FF;
+        // printf(foo);
 
         data[i] = rdata & 0x00FF;
         if(i+1 < count){

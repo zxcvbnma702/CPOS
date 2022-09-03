@@ -97,7 +97,7 @@ InterruptManager::InterruptManager(uint16_t hardwareInterruptOffset, GlobalDescr
     SetInterruptDescriptorTableEntry(hardwareInterruptOffset + 0x0F, CodeSegment, &HandleInterruptRequest0x0F, 0, IDT_INTERRUPT_GATE);
     SetInterruptDescriptorTableEntry(hardwareInterruptOffset + 0x31, CodeSegment, &HandleInterruptRequest0x31, 0, IDT_INTERRUPT_GATE);
 
-    SetInterruptDescriptorTableEntry(hardwareInterruptOffset + 0x80, CodeSegment, &HandleInterruptRequest0x80, 0, IDT_INTERRUPT_GATE);
+    SetInterruptDescriptorTableEntry(                          0x80, CodeSegment, &HandleInterruptRequest0x80, 0, IDT_INTERRUPT_GATE);
 
     //详见8259A
     picMasterCommand.Write(0x11);
@@ -157,7 +157,7 @@ uint32_t InterruptManager::DoHandleInterrupt(uint8_t interruptNumber, uint32_t e
     } else if (interruptNumber != hardwareInterruptOffset) { // 屏蔽时钟中断
         printf("UNHANDLED INTERRUPT 0X");
         printfHex(interruptNumber);
-    }
+    } 
 
     if (interruptNumber == hardwareInterruptOffset) {
         esp = (uint32_t)taskManger->Schedule((CPUState*)esp);

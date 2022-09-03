@@ -25,7 +25,7 @@ namespace cpos
 
             common::uint32_t start_lba;
             common::uint32_t length;
-        }__attribute__((packed));;
+        }__attribute__((packed));
 
         //详见 https://smms.app/image/aF8cl41kUSLnjEK
         struct MasterBootRecord
@@ -36,7 +36,7 @@ namespace cpos
 
             PartitionTableEntry primaryPartition[4];
             common::uint16_t magicnumber;
-        }__attribute__((packed));;
+        }__attribute__((packed));
 
         class MSDOSPartitionTable{
         public:

@@ -24,7 +24,7 @@ namespace cpos
             void AddDriver(Driver* );
             //启动所有驱动
             void ActivateAll();
-        private:
+        protected:
             Driver* drivers[256];
             int numDrivers;
         };

@@ -5,6 +5,7 @@
 #include "common/types.h"
 #include "hardwarecommunication/interrupts.h"
 #include "drivers/driver.h"
+#include "memorymanagement.h"
 
 /*
     PCI -> 外围设备互联总线

@@ -7,7 +7,6 @@
 #include "drivers/mouse.h"
 #include "drivers/ata.h"
 #include "drivers/vga.h"
-#include "drivers/timer.h"
 #include "gui/desktop.h"
 #include "gui/window.h"
 #include "multitasking.h"
@@ -68,6 +67,20 @@ void printfHex(uint8_t key) {
     printf((const char*)foo);
 }
 
+void printfHex16(uint16_t key)
+{
+    printfHex((key >> 8) & 0xFF);
+    printfHex( key & 0xFF);
+}
+
+void printfHex32(uint32_t key)
+{
+    printfHex((key >> 24) & 0xFF);
+    printfHex((key >> 16) & 0xFF);
+    printfHex((key >> 8) & 0xFF);
+    printfHex( key & 0xFF);
+}
+
 void sysPrintf(char* str){
     asm volatile("int $0x80" : :"a" (4), "b" (str));
 }
@@ -120,12 +133,6 @@ private:
     int8_t x, y;
 };
 
-class TimePrint : public TimerEventHandler{
-    public:
-    void Timer(){
-        printf("q");
-    } 
-};
 
 typedef void (*constructor)();
 extern "C" constructor start_ctors;

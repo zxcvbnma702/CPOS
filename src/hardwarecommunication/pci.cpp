@@ -1,4 +1,5 @@
 #include "hardwarecommunication/pci.h"
+#include <drivers/amd_am79c973.h>
 
 using namespace cpos::common;
 using namespace cpos::hardwarecommunication;
@@ -84,20 +85,27 @@ void PeripheralComponentInterconnectController::SelectDrivers(DriverManager* dri
     } 
 }
 
-Driver* PeripheralComponentInterconnectController::GetDriver(PeripheralComponentInterconnectDeviceDescriptor dev, cpos::hardwarecommunication::InterruptManager* interrupts){
+Driver* PeripheralComponentInterconnectController::GetDriver(PeripheralComponentInterconnectDeviceDescriptor dev, InterruptManager* interrupts){
+    Driver* driver;
     switch (dev.vendor_id)
     {
     case 0x1022: //AMD
         switch (dev.device_id)
         {
-            case 0x2000:
+            case 0x2000: //amd net card
                 printf("amd netCard\n");
+                driver = (Driver*)MemoryManager::activeMemoryManager->malloc(sizeof(amd_am79c973));
+                if(driver != 0){
+                    new (driver) amd_am79c973(&dev, interrupts);
+                }
+                return driver;
                 break;
         }
         break;
     case 0x8086: //Intel
         break;
     }
+
 
     switch (dev.class_id)
     {
